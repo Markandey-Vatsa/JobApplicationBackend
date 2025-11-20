@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
+@RequestMapping("/Job")
 public class JobController {
     @Autowired
     private JobServiceImpl jobService;
@@ -32,8 +33,7 @@ public class JobController {
     @GetMapping("/getJobById/{id}")
     public ResponseEntity<?> getJob(@PathVariable Long id){
         Job ans = jobService.getJob(id);
-        if(ans == null) return new ResponseEntity("Job does not exist.",HttpStatus.NO_CONTENT);
-        return new ResponseEntity<>(ans,HttpStatus.OK);
+        return (ans == null)? new ResponseEntity<>("Job does not exist.",HttpStatus.NOT_FOUND):new ResponseEntity<>(ans,HttpStatus.OK);
     }
 
 
