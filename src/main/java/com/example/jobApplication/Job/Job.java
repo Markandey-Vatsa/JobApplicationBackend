@@ -1,6 +1,8 @@
 package com.example.jobApplication.Job;
 
 
+import com.example.jobApplication.Company.Company;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,8 +24,14 @@ public class Job {
     @Column()
     private String description;
 
-    @Column(nullable = false,length = 200)
-    private String company;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "company",nullable = false)
+    @JsonBackReference
+    private Company company;
+
+    @Column(name = "company_name",nullable = false)
+    private Long companyId;
 
     @Column()
     private String location;
@@ -34,7 +42,7 @@ public class Job {
     @Column()
     private String minSalary;
 
-    public Job(Long id, String title, String description, String company, String location, String maxSalary, String minSalary) {
+    public Job(Long id, String title, String description, Company company, String location, String maxSalary, String minSalary) {
         this.id = id;
         this.title = title;
         this.description = description;

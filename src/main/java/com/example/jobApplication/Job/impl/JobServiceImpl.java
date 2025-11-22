@@ -1,5 +1,7 @@
 package com.example.jobApplication.Job.impl;
 
+import com.example.jobApplication.Company.Company;
+import com.example.jobApplication.Company.CompanyRepository;
 import com.example.jobApplication.Job.Job;
 import com.example.jobApplication.Job.JobRepository;
 import com.example.jobApplication.Job.JobService;
@@ -21,9 +23,21 @@ public class JobServiceImpl implements JobService {
     @Autowired
     JobRepository jobRepository;
 
+    @Autowired
+    CompanyRepository companyService;
+
     @Override
-    public void createJob(Job job) {
-        jobRepository.save(job);
+    public boolean createJob(Job job,Long companyId) {
+        Company com = companyService.findById(companyId).orElse(null);
+
+        if(com!=null) {
+            job.setCompanyId(companyId);
+            job.setCompany(com);
+            jobRepository.save(job);
+            return true;
+        }
+
+        return false;
     }
 
     @Override

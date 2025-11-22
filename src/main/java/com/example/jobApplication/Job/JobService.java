@@ -3,7 +3,7 @@ package com.example.jobApplication.Job;
 import java.util.List;
 
 public interface JobService {
-    void createJob(Job job);
+    boolean createJob(Job job, Long companyId);
     List<Job> findAll();
     Job getJob(Long id);
     boolean deleteJob(Long id);

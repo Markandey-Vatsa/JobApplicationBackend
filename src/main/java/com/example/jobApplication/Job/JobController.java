@@ -22,12 +22,11 @@ public class JobController {
         return jobService.findAll();
     }
 
-
-    @PostMapping("/Jobs")
-    public ResponseEntity<?> createJob(@RequestBody Job job){
-        jobService.createJob(job);
-        return ResponseEntity.ok("Job added successfully");
-
+//Post job in a company.
+    @PostMapping("/Jobs/{companyId}")
+    public ResponseEntity<?> createJob(@RequestBody Job job,@PathVariable Long companyId){
+        boolean ans = jobService.createJob(job,companyId);
+        return ans?new ResponseEntity<>("Job created successfully", HttpStatus.OK):new ResponseEntity<>("Job not found", HttpStatus.NO_CONTENT);
     }
 
     @GetMapping("/getJobById/{id}")
