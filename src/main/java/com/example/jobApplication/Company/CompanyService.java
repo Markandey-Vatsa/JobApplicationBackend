@@ -3,10 +3,7 @@ package com.example.jobApplication.Company;
 import java.util.List;
 
 public interface CompanyService {
-
     List<Company> getAllCompanies();
-
-
     List<Review> getReviewsByCompanyId(Long companyId);
     boolean addReviewToCompany(Long companyId, Review review);
     Review getReviewById(Long companyId, Long reviewId);
@@ -14,7 +11,8 @@ public interface CompanyService {
     boolean deleteReview(Long companyId, Long reviewId);
     void addCompany(Company company);
     boolean updateCompany(Long companyId, Company updatedCompany);
-
+    Company getCompanyById(Long companyId);
+    boolean deleteCompany(Long companyId);
 }
 
 //    GET / companies/ {companyId}/reviews

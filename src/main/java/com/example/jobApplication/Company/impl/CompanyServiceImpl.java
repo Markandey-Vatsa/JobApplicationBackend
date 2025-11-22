@@ -30,6 +30,17 @@ public class CompanyServiceImpl implements CompanyService {
         return companyRepository.findAll();
     }
 
+    @Override
+    @Transactional
+    public boolean deleteCompany(Long companyId) {
+        try {
+            companyRepository.deleteById(companyId);
+            return true;
+        }catch(Exception e){
+            return false;
+        }
+    }
+
 
 //    Update company details
     @Override
@@ -44,6 +55,11 @@ public class CompanyServiceImpl implements CompanyService {
 
         return false;
 
+    }
+
+    @Override
+    public Company getCompanyById(Long companyId) {
+        return companyRepository.findById(companyId).orElse(null);
     }
 
 

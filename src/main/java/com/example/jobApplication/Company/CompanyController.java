@@ -7,8 +7,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 
 @RestController
 @RequestMapping("/companies")
@@ -22,8 +20,19 @@ public class CompanyController {
     @PostMapping("/")
     public ResponseEntity<?> addCompany(@RequestBody Company company){
         companyService.addCompany(company);
-        return new ResponseEntity<>("Company added successfully", HttpStatus.OK);
+        return new ResponseEntity<>("Company added successfully", HttpStatus.CREATED);
     }
+
+//    Get company by id
+    @GetMapping("/{companyId}")
+    public ResponseEntity<?> getCompany(@PathVariable Long companyId) {
+        Company com = companyService.getCompanyById(companyId);
+        if(com == null) {
+            return new ResponseEntity<>("Company does not exist.", HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(com, HttpStatus.OK);
+    }
+
 
 //    Get all companies
     @GetMapping("/")
@@ -51,7 +60,7 @@ public ResponseEntity<?> updateCompany(@PathVariable Long companyId, @RequestBod
     @PostMapping("reviews/{companyId}")
     public ResponseEntity<?> postReviewToCompany(@PathVariable Long companyId, @RequestBody Review review){
         boolean ans = companyService.addReviewToCompany(companyId, review);
-        return ans? new ResponseEntity<>("Review added successfully",HttpStatus.OK): new ResponseEntity<>("Company does not exist.",HttpStatus.NO_CONTENT);
+        return ans? new ResponseEntity<>("Review added successfully",HttpStatus.CREATED): new ResponseEntity<>("Company does not exist.",HttpStatus.NO_CONTENT);
     }
 
 
@@ -78,6 +87,12 @@ public ResponseEntity<?> updateReview(@PathVariable Long companyId, @PathVariabl
 }
 
 
+//Delete a particular company
+    @DeleteMapping("/{companyId}")
+    public ResponseEntity<?> deleteCompany(@PathVariable Long companyId){
+        boolean ans = companyService.deleteCompany(companyId);
+        return ans? new ResponseEntity<>("Company deleted successfully",HttpStatus.OK): new ResponseEntity<>("Company not found",HttpStatus.NO_CONTENT);
+    }
 
 }
 

@@ -26,7 +26,7 @@ public class JobController {
     @PostMapping("/Jobs/{companyId}")
     public ResponseEntity<?> createJob(@RequestBody Job job,@PathVariable Long companyId){
         boolean ans = jobService.createJob(job,companyId);
-        return ans?new ResponseEntity<>("Job created successfully", HttpStatus.OK):new ResponseEntity<>("Job not found", HttpStatus.NO_CONTENT);
+        return ans?new ResponseEntity<>("Job created successfully", HttpStatus.CREATED):new ResponseEntity<>("Job not found", HttpStatus.NO_CONTENT);
     }
 
     @GetMapping("/getJobById/{id}")
