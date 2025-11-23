@@ -1,9 +1,14 @@
-package com.example.jobApplication.Company;
+package com.example.jobApplication.Reviews;
+import com.example.jobApplication.Company.Company;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+
+
 
 @Getter
 @Setter
@@ -25,5 +30,10 @@ public class Review {
 
     @Column(nullable = false)
     private String  reviewText;
+
+    @Min(0)
+    @Max(10)
+    @Column
+    private int rating;
 
 }

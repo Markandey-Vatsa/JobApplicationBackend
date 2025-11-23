@@ -1,4 +1,4 @@
-package com.example.jobApplication.Company;
+package com.example.jobApplication.Reviews;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

@@ -2,6 +2,7 @@ package com.example.jobApplication.Company;
 
 
 import com.example.jobApplication.Job.Job;
+import com.example.jobApplication.Reviews.Review;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Getter;
