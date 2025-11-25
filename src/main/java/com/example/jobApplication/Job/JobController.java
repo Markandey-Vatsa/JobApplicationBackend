@@ -15,8 +15,6 @@ public class JobController {
     @Autowired
     private JobServiceImpl jobService;
 
-//    private List<Job> Jobs = new ArrayList<>();
-
     @GetMapping("/Jobs")
     public List<Job>findAll(){
         return jobService.findAll();
@@ -42,11 +40,17 @@ public class JobController {
         return ans?new ResponseEntity<>("Job deleted successfully",HttpStatus.OK):new ResponseEntity<>("Job not found",HttpStatus.NO_CONTENT);
     }
 
-
     @PutMapping("/Jobs/{id}")
     public ResponseEntity<?> updateJob(@PathVariable Long id,@RequestBody Job updatedJob){
         boolean ans = jobService.updateJob(id,updatedJob);
         return ans?new ResponseEntity<>("Job updated successfully",HttpStatus.OK): new ResponseEntity<>("Job not found",HttpStatus.NO_CONTENT);
+    }
+
+//    Get job by company
+    @GetMapping("/Jobs/company/{companyId}")
+    public ResponseEntity<?> getJobsByCompany(@PathVariable Long companyId){
+        List<Job> jobs = jobService.getJobsByCompanyId(companyId);
+        return jobs.isEmpty()?new ResponseEntity<>("No jobs found for the company",HttpStatus.NO_CONTENT):new ResponseEntity<>(jobs,HttpStatus.OK);
     }
 
 

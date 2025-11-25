@@ -12,4 +12,5 @@ public interface RecruiterService {
     Recruiter getRecruiterById(Long recruiterId);
     List<Recruiter> getAllRecruiters();
     List<Job> getJobsByRecruiter(Long recruiterId);
+    List<Recruiter> getRecruitersByCompany(Long companyId);
 }

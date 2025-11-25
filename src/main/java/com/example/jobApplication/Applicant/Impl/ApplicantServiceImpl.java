@@ -3,9 +3,13 @@ package com.example.jobApplication.Applicant.Impl;
 import com.example.jobApplication.Applicant.Applicant;
 import com.example.jobApplication.Applicant.ApplicantRepository;
 import com.example.jobApplication.Applicant.ApplicantService;
+import com.example.jobApplication.User.Role;
 import com.example.jobApplication.User.UserRepository;
+import com.example.jobApplication.User.UserService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,10 +21,17 @@ public class ApplicantServiceImpl implements ApplicantService {
     ApplicantRepository applicantRepository;
 
     @Autowired
+    private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
+    @Autowired
     UserRepository userRepository;
+
+    @Autowired
+    private UserService userService;
 
     @Override
     public void addApplicant(Applicant applicant) {
+        applicant.getUser().getRoles().add(Role.APPLICANT);
         applicantRepository.save(applicant);
     }
 
@@ -39,11 +50,7 @@ public class ApplicantServiceImpl implements ApplicantService {
 //        }
         Applicant app = applicantRepository.findById(applicantId).orElseThrow(() -> new EntityNotFoundException("Applicant not found"));
         if(updatedApplicant != null){
-          String newEmail = (updatedApplicant.getUser().getEmail() != null) ? updatedApplicant.getUser().getEmail() : app.getUser().getEmail();
-          if(!newEmail.equals(app.getUser().getEmail()) && userRepository.existsByEmail(newEmail)){
-              throw new IllegalArgumentException("Email already in use");
-          }
-          app.getUser().setPassword((updatedApplicant.getUser().getPassword() != null)?updatedApplicant.getUser().getPassword():app.getUser().getPassword());
+          app.setUser(updatedApplicant.getUser()!=null ? updatedApplicant.getUser() : app.getUser());
           app.setResumeLink(updatedApplicant.getResumeLink() != null ? updatedApplicant.getResumeLink() : app.getResumeLink());
           app.setDescription(updatedApplicant.getDescription()!= null ? updatedApplicant.getDescription() : app.getDescription());
         }

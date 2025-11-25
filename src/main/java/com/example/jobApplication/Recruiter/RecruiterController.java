@@ -64,4 +64,14 @@ public class RecruiterController {
         return new ResponseEntity<>(jobs,HttpStatus.OK);
 
     }
+
+//    Get all recruiters by company
+    @GetMapping("/recruiter/{companyId}")
+    public ResponseEntity<?> getRecruitersByCompany(@PathVariable Long companyId){
+        List<Recruiter> recruiters = recruiterService.getRecruitersByCompany(companyId);
+        if(recruiters.isEmpty()){
+            return new ResponseEntity<>("No recruiters found for this company.",HttpStatus.NO_CONTENT);
+        }
+        return new ResponseEntity<>(recruiters,HttpStatus.OK);
+    }
 }

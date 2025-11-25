@@ -4,9 +4,13 @@ import com.example.jobApplication.Company.*;
 
 import com.example.jobApplication.Reviews.Review;
 import com.example.jobApplication.Reviews.ReviewRepository;
+import com.example.jobApplication.User.Role;
 import com.example.jobApplication.User.UserRepository;
+import com.example.jobApplication.User.UserService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,10 +26,17 @@ public class CompanyServiceImpl implements CompanyService {
     @Autowired
     UserRepository userRepository;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
+    @Autowired
+    private UserService userService;
+
 
     @Override
     @Transactional
     public void addCompany(Company company) {
+        company.getUser().getRoles().add(Role.COMPANY);
         companyRepository.save(company);
     }
 
@@ -51,15 +62,10 @@ public class CompanyServiceImpl implements CompanyService {
     @Transactional
     public void updateCompany(Long companyId, Company updatedCompany) {
         Company com = companyRepository.findById(companyId).orElseThrow(() -> new EntityNotFoundException("Applicant not found"));
-        com.getUser().setName((updatedCompany.getUser().getName() != null? updatedCompany.getUser().getName(): com.getUser().getName()));
         com.setDescription(updatedCompany.getDescription()!= null? updatedCompany.getDescription(): com.getDescription());
-        String email = updatedCompany.getUser().getEmail();
-
-        if(userRepository.existsByEmail(email) && !email.equals(com.getUser().getEmail())){
-            throw new IllegalArgumentException("Email already in use");
-        }
-        com.getUser().setEmail(updatedCompany.getUser().getEmail() != null ? updatedCompany.getUser().getEmail() : com.getUser().getEmail());
-        com.getUser().setPassword(updatedCompany.getUser().getPassword() != null ? updatedCompany.getUser().getPassword() : com.getUser().getPassword());
+        com.setJobs(updatedCompany.getJobs()!=null ? updatedCompany.getJobs(): com.getJobs());
+        com.setRecruiters(updatedCompany.getRecruiters()!=null ? updatedCompany.getRecruiters(): com.getRecruiters());
+        com.setUser(updatedCompany.getUser()!=null ? updatedCompany.getUser(): com.getUser());
         companyRepository.save(com);
     }
 

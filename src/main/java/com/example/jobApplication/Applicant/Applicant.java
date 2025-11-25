@@ -63,7 +63,7 @@ public class Applicant {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long applicantId;
 
-    @OneToOne(fetch = FetchType.LAZY,cascade = {CascadeType.PERSIST,CascadeType.MERGE})
+    @OneToOne(fetch = FetchType.LAZY,cascade = {CascadeType.PERSIST,CascadeType.MERGE,CascadeType.REMOVE})
     @JoinColumn(name = "user_id", nullable = false, unique = true)
     private User user;
 

@@ -80,5 +80,12 @@ public class JobServiceImpl implements JobService {
 
     }
 
+    @Override
+    public List<Job> getJobsByCompanyId(Long companyId) {
+        Company com = companyService.findById(companyId).orElse(null);
+        if (com == null) return List.of();
+        return com.getJobs();
+    }
+
 
 }
