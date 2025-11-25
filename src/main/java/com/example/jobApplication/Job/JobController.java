@@ -39,7 +39,7 @@ public class JobController {
     @DeleteMapping("/Jobs/{id}")
     public ResponseEntity<?> deleteJob(@PathVariable Long id){
         boolean ans = jobService.deleteJob(id);
-        return ans?new ResponseEntity("Job deleted successfully",HttpStatus.OK):new ResponseEntity("Job not found",HttpStatus.NO_CONTENT);
+        return ans?new ResponseEntity<>("Job deleted successfully",HttpStatus.OK):new ResponseEntity<>("Job not found",HttpStatus.NO_CONTENT);
     }
 
 

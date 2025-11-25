@@ -31,8 +31,8 @@ public class JobServiceImpl implements JobService {
         Company com = companyService.findById(companyId).orElse(null);
 
         if(com!=null) {
-            job.setCompanyId(companyId);
             job.setCompany(com);
+            job.getCompany().setId(companyId);
             jobRepository.save(job);
             return true;
         }
@@ -72,6 +72,7 @@ public class JobServiceImpl implements JobService {
             existingJob.setLocation(updatedJob.getLocation());
             existingJob.setMaxSalary(updatedJob.getMaxSalary());
             existingJob.setMinSalary(updatedJob.getMinSalary());
+            existingJob.setId(updatedJob.getId());
             jobRepository.save(existingJob);
             return true;
         }

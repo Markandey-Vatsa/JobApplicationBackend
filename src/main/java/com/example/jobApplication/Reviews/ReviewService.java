@@ -1,5 +1,7 @@
 package com.example.jobApplication.Reviews;
 
+import com.example.jobApplication.Applicant.Applicant;
+
 import java.util.List;
 
 public interface ReviewService {

@@ -2,7 +2,6 @@ package com.example.jobApplication.Company;
 
 
 import com.example.jobApplication.Company.impl.CompanyServiceImpl;
-import com.example.jobApplication.Reviews.Review;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -45,8 +44,12 @@ public class CompanyController {
 //    Update company details
 @PutMapping("/{companyId}")
 public ResponseEntity<?> updateCompany(@PathVariable Long companyId, @RequestBody Company updatedCompany){
-        boolean ans = companyService.updateCompany(companyId, updatedCompany);
-        return ans? new ResponseEntity<>("Company updated successfully",HttpStatus.OK): new ResponseEntity<>("Company does not exist.",HttpStatus.NO_CONTENT);
+     try {
+         companyService.updateCompany(companyId, updatedCompany);
+         return new ResponseEntity<>("Company details updated successfully", HttpStatus.OK);
+     }catch(Exception e){
+         return new ResponseEntity<>("Couldn't Update company details, Please make sure company exists and email is unique.",HttpStatus.NO_CONTENT);
+     }
 }
 
 

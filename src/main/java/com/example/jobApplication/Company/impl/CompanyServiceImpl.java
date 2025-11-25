@@ -4,6 +4,8 @@ import com.example.jobApplication.Company.*;
 
 import com.example.jobApplication.Reviews.Review;
 import com.example.jobApplication.Reviews.ReviewRepository;
+import com.example.jobApplication.User.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +18,9 @@ public class CompanyServiceImpl implements CompanyService {
 
     @Autowired
     CompanyRepository companyRepository;
+
+    @Autowired
+    UserRepository userRepository;
 
 
     @Override
@@ -43,25 +48,25 @@ public class CompanyServiceImpl implements CompanyService {
 
 //    Update company details
     @Override
-    public boolean updateCompany(Long companyId, Company updatedCompany) {
-        Company com = companyRepository.findById(companyId).orElse(null);
-        if(com != null){
-            com.setName(updatedCompany.getName());
-            com.setDescription(updatedCompany.getDescription());
-            companyRepository.save(com);
-            return true;
+    @Transactional
+    public void updateCompany(Long companyId, Company updatedCompany) {
+        Company com = companyRepository.findById(companyId).orElseThrow(() -> new EntityNotFoundException("Applicant not found"));
+        com.getUser().setName((updatedCompany.getUser().getName() != null? updatedCompany.getUser().getName(): com.getUser().getName()));
+        com.setDescription(updatedCompany.getDescription()!= null? updatedCompany.getDescription(): com.getDescription());
+        String email = updatedCompany.getUser().getEmail();
+
+        if(userRepository.existsByEmail(email) && !email.equals(com.getUser().getEmail())){
+            throw new IllegalArgumentException("Email already in use");
         }
-
-        return false;
-
+        com.getUser().setEmail(updatedCompany.getUser().getEmail() != null ? updatedCompany.getUser().getEmail() : com.getUser().getEmail());
+        com.getUser().setPassword(updatedCompany.getUser().getPassword() != null ? updatedCompany.getUser().getPassword() : com.getUser().getPassword());
+        companyRepository.save(com);
     }
 
     @Override
     public Company getCompanyById(Long companyId) {
         return companyRepository.findById(companyId).orElse(null);
     }
-
-
 }
 
 

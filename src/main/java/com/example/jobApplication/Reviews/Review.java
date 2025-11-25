@@ -22,7 +22,7 @@ public class Review {
 
     @ManyToOne
     @JoinColumn(name = "company_id", nullable = false)
-    @JsonBackReference
+    @JsonBackReference("company-reviews")
     private Company company;
 
     @Column(nullable = false, length = 200)

@@ -7,7 +7,7 @@ import java.util.List;
 public interface CompanyService {
     List<Company> getAllCompanies();
     void addCompany(Company company);
-    boolean updateCompany(Long companyId, Company updatedCompany);
+    void updateCompany(Long companyId, Company updatedCompany);
     Company getCompanyById(Long companyId);
     boolean deleteCompany(Long companyId);
 }

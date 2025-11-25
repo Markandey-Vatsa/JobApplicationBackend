@@ -1,12 +1,18 @@
 package com.example.jobApplication.Job;
 
 
+
+import com.example.jobApplication.Application.Application;
 import com.example.jobApplication.Company.Company;
+import com.example.jobApplication.Recruiter.Recruiter;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Getter
@@ -24,14 +30,11 @@ public class Job {
     @Column()
     private String description;
 
-
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "company",nullable = false)
-    @JsonBackReference
+    @JsonBackReference("company-jobs")
     private Company company;
 
-    @Column(name = "company_name",nullable = false)
-    private Long companyId;
 
     @Column()
     private String location;
@@ -39,16 +42,15 @@ public class Job {
     @Column()
     private String maxSalary;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "recruiter_id",nullable = false)
+    @JsonBackReference("recruiter-jobs")
+    private Recruiter recruiter;
+
+    @OneToMany(mappedBy = "job", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference("job-applications")
+    private List<Application> applications = new ArrayList<>();
+
     @Column()
     private String minSalary;
-
-    public Job(Long id, String title, String description, Company company, String location, String maxSalary, String minSalary) {
-        this.id = id;
-        this.title = title;
-        this.description = description;
-        this.company = company;
-        this.location = location;
-        this.maxSalary = maxSalary;
-        this.minSalary = minSalary;
-    }
 }
