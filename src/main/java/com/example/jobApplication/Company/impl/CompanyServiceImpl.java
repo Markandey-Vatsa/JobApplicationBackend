@@ -5,6 +5,7 @@ import com.example.jobApplication.Company.*;
 import com.example.jobApplication.Reviews.Review;
 import com.example.jobApplication.Reviews.ReviewRepository;
 import com.example.jobApplication.User.Role;
+import com.example.jobApplication.User.User;
 import com.example.jobApplication.User.UserRepository;
 import com.example.jobApplication.User.UserService;
 import jakarta.persistence.EntityNotFoundException;
@@ -20,23 +21,28 @@ import java.util.List;
 @Service
 public class CompanyServiceImpl implements CompanyService {
 
-    @Autowired
-    CompanyRepository companyRepository;
-
-    @Autowired
-    UserRepository userRepository;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-
-    @Autowired
-    private UserService userService;
-
+    CompanyServiceImpl(CompanyRepository companyRepository,
+                       UserRepository userRepository){
+        this.userRepository = userRepository;
+        this.companyRepository = companyRepository;
+    }
+    private final CompanyRepository companyRepository;
+    private final UserRepository userRepository;
 
     @Override
     @Transactional
     public void addCompany(Company company) {
         company.getUser().getRoles().add(Role.COMPANY);
+        companyRepository.save(company);
+
+        Long userId = company.getUser().getUserId();  // must come from request
+
+        User dbUser = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        dbUser.getRoles().add(Role.APPLICANT);
+
+        company.setUser(dbUser);
+
         companyRepository.save(company);
     }
 

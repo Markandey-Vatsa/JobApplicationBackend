@@ -3,7 +3,9 @@ package com.example.jobApplication.Applicant.Impl;
 import com.example.jobApplication.Applicant.Applicant;
 import com.example.jobApplication.Applicant.ApplicantRepository;
 import com.example.jobApplication.Applicant.ApplicantService;
+import com.example.jobApplication.Application.ApplicationRepository;
 import com.example.jobApplication.User.Role;
+import com.example.jobApplication.User.User;
 import com.example.jobApplication.User.UserRepository;
 import com.example.jobApplication.User.UserService;
 import jakarta.persistence.EntityNotFoundException;
@@ -17,37 +19,29 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class ApplicantServiceImpl implements ApplicantService {
 
-    @Autowired
-    ApplicantRepository applicantRepository;
+    ApplicantServiceImpl(ApplicantRepository applicantRepository, UserRepository userRepository){
+        this.applicantRepository = applicantRepository;
+        this.userRepository = userRepository;
+    }
+    private final ApplicantRepository applicantRepository;
+    private final UserRepository userRepository;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-
-    @Autowired
-    UserRepository userRepository;
-
-    @Autowired
-    private UserService userService;
 
     @Override
+    @Transactional
     public void addApplicant(Applicant applicant) {
-        applicant.getUser().getRoles().add(Role.APPLICANT);
+        Long userId = applicant.getUser().getUserId();  // must come from request
+        User dbUser = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        dbUser.getRoles().add(Role.APPLICANT);
+        applicant.setUser(dbUser);
         applicantRepository.save(applicant);
     }
 
     @Override
     @Transactional
     public void updateApplicant(Long applicantId, Applicant updatedApplicant) {
-//        Applicant app = applicantRepository.findById(applicantId).orElse(null);
-//        if (app == null) return false;
-//        else {
-//            app.getUser().setName(updatedApplicant.getUser().getName());
-//            app.getUser().setEmail(updatedApplicant.getUser().getEmail());
-//            app.setResumeLink(updatedApplicant.getResumeLink());
-//            app.setDescription(updatedApplicant.getDescription());
-//            applicantRepository.save(app);
-//            return true;
-//        }
+
         Applicant app = applicantRepository.findById(applicantId).orElseThrow(() -> new EntityNotFoundException("Applicant not found"));
         if(updatedApplicant != null){
           app.setUser(updatedApplicant.getUser()!=null ? updatedApplicant.getUser() : app.getUser());
@@ -60,6 +54,7 @@ public class ApplicantServiceImpl implements ApplicantService {
 
     @Override
     public boolean deleteApplicant(Long applicantId) {
+       if(!applicantRepository.existsById(applicantId)) return false;
        try{
            applicantRepository.deleteById(applicantId);
            return true;

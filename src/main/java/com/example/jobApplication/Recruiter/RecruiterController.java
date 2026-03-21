@@ -4,6 +4,7 @@ import com.example.jobApplication.Job.Job;
 import com.example.jobApplication.Recruiter.Impl.RecruiterServiceImpl;
 import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.graphql.GraphQlProperties;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +19,11 @@ public class RecruiterController {
 
     @PostMapping("/")
     public ResponseEntity<?> addRecruiter(@RequestBody Recruiter recruiter){
-        recruiterService.addRecruiter(recruiter);
+        try {
+            recruiterService.addRecruiter(recruiter);
+        }catch(Exception e){
+            return new ResponseEntity<>("Kindly make sure that user account exists", HttpStatus.NOT_FOUND);
+        }
         return new ResponseEntity<>("Recruiter Profile created successfully", HttpStatus.CREATED);
     }
 
@@ -28,7 +33,7 @@ public class RecruiterController {
             recruiterService.updateRecruiter(recruiterId, updatedRecruiter);
             return new ResponseEntity<>("Recruiter details updated successfully", HttpStatus.OK);
         }catch(Exception e){
-            return new ResponseEntity<>("Couldn't Update recruiter details, Please make sure recruiter exists and email is unique.",HttpStatus.NO_CONTENT);
+            return new ResponseEntity<>("Couldn't Update recruiter details, Please make sure recruiter exists and email is unique.",HttpStatus.NOT_FOUND);
         }
 
     }
@@ -45,7 +50,7 @@ public class RecruiterController {
     @DeleteMapping("/{recruiterId}")
     public ResponseEntity<?> deleteRecruiter(@PathVariable Long recruiterId) {
         boolean ans = recruiterService.deleteRecruiter(recruiterId);
-        return ans ? new ResponseEntity<>("Recruiter profile deleted successfully",HttpStatus.OK) : new ResponseEntity<>("Recruiter not found",HttpStatus.NO_CONTENT);
+        return ans ? new ResponseEntity<>("Recruiter profile deleted successfully",HttpStatus.OK) : new ResponseEntity<>("Recruiter not found",HttpStatus.NOT_FOUND);
     }
 
 

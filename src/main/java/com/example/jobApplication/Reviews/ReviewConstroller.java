@@ -1,7 +1,9 @@
 package com.example.jobApplication.Reviews;
 
+import com.example.jobApplication.Applicant.Applicant;
 import com.example.jobApplication.Company.impl.CompanyServiceImpl;
 import com.example.jobApplication.Reviews.Impl.ReviewServiceImpl;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,9 +26,21 @@ public class ReviewConstroller {
 
     //    Post review to company
     @PostMapping("/{companyId}")
-    public ResponseEntity<?> postReviewToCompany(@PathVariable Long companyId,@Valid @RequestBody Review review){
-        boolean ans = reviewService.addReviewToCompany(companyId, review);
-        return ans? new ResponseEntity<>("Review added successfully",HttpStatus.CREATED): new ResponseEntity<>("Company does not exist.",HttpStatus.NO_CONTENT);
+    public ResponseEntity<?> postReviewToCompany(
+            @PathVariable Long companyId,
+            @RequestParam Long applicantId,
+            @Valid @RequestBody Review review) {
+
+        try {
+            reviewService.addReviewToCompany(companyId, review, applicantId);
+            return new ResponseEntity<>("Review added successfully", HttpStatus.CREATED);
+
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+
+        } catch (IllegalStateException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
+        }
     }
 
 //    Get particular review of particular company
@@ -42,15 +56,19 @@ public class ReviewConstroller {
     @DeleteMapping("/{companyId}/{reviewId}")
     public ResponseEntity<?> deleteReview(@PathVariable Long companyId, @PathVariable Long reviewId){
         boolean ans = reviewService.deleteReview(companyId,reviewId);
-        return ans? new ResponseEntity<>("Review deleted successfully", HttpStatus.OK): new ResponseEntity<>("Review not found",HttpStatus.NO_CONTENT);
+        return ans? new ResponseEntity<>("Review deleted successfully", HttpStatus.OK): new ResponseEntity<>("Review not found",HttpStatus.NOT_FOUND);
     }
 
 
     //    Update particular review of particular company
     @PutMapping("/{companyId}/{reviewId}")
-    public ResponseEntity<?> updateReview(@PathVariable Long companyId, @PathVariable Long reviewId, @RequestBody Review updatedReview){
-        boolean ans = reviewService.UpdateReview(companyId,reviewId, updatedReview);
-        return ans? new ResponseEntity<>("Review updated successfully",HttpStatus.OK): new ResponseEntity<>("Review not found",HttpStatus.NO_CONTENT);
+    public ResponseEntity<?> updateReview(@PathVariable Long companyId, @PathVariable Long reviewId,@RequestParam Long applicantId, @RequestBody Review updatedReview){
+        try {
+            reviewService.UpdateReview(companyId, reviewId,applicantId,updatedReview);
+        }catch(Exception e){
+            return new ResponseEntity<>("Couldn't update the review: "+e.getMessage(),HttpStatus.NOT_FOUND);
+        }
+       return new ResponseEntity<>("Review updated successfully",HttpStatus.OK);
     }
 
 }

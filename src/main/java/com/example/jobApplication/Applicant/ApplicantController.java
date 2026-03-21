@@ -37,7 +37,7 @@ public class ApplicantController {
     @DeleteMapping("/{applicantId}")
     public ResponseEntity<?> deleteApplicant(@PathVariable Long applicantId){
         boolean ans = applicantService.deleteApplicant(applicantId);
-        return !ans? new ResponseEntity<>("Applicant not found",HttpStatus.NO_CONTENT): new ResponseEntity<>("Account deleted successfully",HttpStatus.OK);
+        return !ans? new ResponseEntity<>("Applicant not found",HttpStatus.NOT_FOUND): new ResponseEntity<>("Account deleted successfully",HttpStatus.OK);
     }
 
 //    Get applicant by id

@@ -1,27 +1,34 @@
 package com.example.jobApplication.Reviews.Impl;
 
+import com.example.jobApplication.Applicant.Applicant;
+import com.example.jobApplication.Applicant.ApplicantRepository;
 import com.example.jobApplication.Company.Company;
 import com.example.jobApplication.Company.CompanyRepository;
 import com.example.jobApplication.Reviews.Review;
 import com.example.jobApplication.Reviews.ReviewRepository;
 import com.example.jobApplication.Reviews.ReviewService;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 
 @Service
 public class ReviewServiceImpl implements ReviewService {
-    @Autowired
-    CompanyRepository companyRepository;
 
-    @Autowired
-    ReviewRepository reviewRepository;
+    ReviewServiceImpl(CompanyRepository companyRepository,
+                      ReviewRepository reviewRepository,
+                      ApplicantRepository applicantRepository){
+        this.companyRepository = companyRepository;
+        this.reviewRepository = reviewRepository;
+        this.applicantRepository = applicantRepository;
+    }
+
+    private final CompanyRepository companyRepository;
+    private final ReviewRepository reviewRepository;
+    private final ApplicantRepository applicantRepository;
 
     @Override
     @Transactional(readOnly = true)
@@ -38,15 +45,28 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     @Transactional
-    public boolean addReviewToCompany(Long companyId, Review review) {
-        Company com = companyRepository.findById(companyId).orElse(null);
-        if(com != null){
-            review.setCompany(com);
-            com.getReviews().add(review);
-            companyRepository.save(com);
-            return true;
+    public void addReviewToCompany(Long companyId, Review review, Long applicantId) {
+
+        Company company = companyRepository.findById(companyId)
+                .orElseThrow(() -> new EntityNotFoundException("Company not found"));
+
+        Applicant applicant = applicantRepository.findById(applicantId)
+                .orElseThrow(() -> new EntityNotFoundException("Applicant not found"));
+
+        // Set managed entities
+        review.setCompany(company);
+        review.setApplicant(applicant);
+
+        // Optional: service-level check
+        if (reviewRepository.existsByApplicantApplicantIdAndCompanyId(applicantId, companyId)) {
+            throw new IllegalStateException("You have already reviewed this company");
         }
-        return false;
+
+        try {
+            reviewRepository.save(review);
+        } catch (DataIntegrityViolationException e) {
+            throw new IllegalStateException("You have already reviewed this company");
+        }
     }
 
 
@@ -58,18 +78,29 @@ public class ReviewServiceImpl implements ReviewService {
                 .orElse(null);
     }
 
-    @Override
+
     @Transactional
-    public boolean UpdateReview(Long companyId, Long reviewId, Review updatedReview) {
-        return reviewRepository.findById(reviewId)
-                .filter(r -> r.getCompany() != null && companyId.equals(r.getCompany().getId()))
-                .map(r -> {
-                    r.setReviewerName(updatedReview.getReviewerName());
-                    r.setReviewText(updatedReview.getReviewText());
-                    r.setRating(updatedReview.getRating());
-                    reviewRepository.save(r);
-                    return true;
-                }).orElse(false);
+    @Override
+    public void UpdateReview(Long companyId, Long reviewId,Long applicantId, Review updatedReview) {
+        Review review = reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new EntityNotFoundException("Review not found"));
+
+
+        if (review.getCompany() == null || !companyId.equals(review.getCompany().getId())) {
+            throw new IllegalArgumentException("Review does not belong to this company");
+        }
+
+        if (review.getApplicant() == null || !applicantId.equals(review.getApplicant().getApplicantId())) {
+            throw new IllegalStateException("You are not allowed to update this review");
+        }
+
+        if (updatedReview.getReviewText() != null) {
+            review.setReviewText(updatedReview.getReviewText());
+        }
+
+        if (updatedReview.getRating() != 0) { // assuming 1–5 valid
+            review.setRating(updatedReview.getRating());
+        }
     }
 
     @Override

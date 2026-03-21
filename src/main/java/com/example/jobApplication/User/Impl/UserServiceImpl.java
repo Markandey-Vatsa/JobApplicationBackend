@@ -8,17 +8,16 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.HashSet;
 import java.util.List;
 
 @Service
 public class UserServiceImpl implements UserService {
-
     @Autowired
     private UserRepository userRepository;
-
-
-   @Autowired
-   private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    @Autowired
+    private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
 //    Create user
     @Override
@@ -27,9 +26,9 @@ public class UserServiceImpl implements UserService {
         if(userRepository.existsByEmail(email)){
             throw new IllegalArgumentException("Email already in use");
         }
-        if (user.getRoles() == null || user.getRoles().isEmpty()) {
-            throw new IllegalArgumentException("User must have at least one role");
-        }
+//        if (user.getRoles() == null || user.getRoles().isEmpty()) {
+//            throw new IllegalArgumentException("User must have at least one role");
+//        }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepository.save(user);
     }
@@ -47,7 +46,11 @@ public class UserServiceImpl implements UserService {
         String newEmail = (updatedUser.getEmail() != null) ? updatedUser.getEmail() : user.getEmail();
         user.setName((updatedUser.getName() != null)? updatedUser.getName(): user.getName());
         user.setEmail(newEmail);
-        user.setPassword((updatedUser.getPassword() != null)? passwordEncoder.encode(updatedUser.getPassword()): passwordEncoder.encode(user.getPassword()));
+        user.setPassword((updatedUser.getPassword() != null)? passwordEncoder.encode(updatedUser.getPassword()): user.getPassword());
+
+        if (updatedUser.getRoles() != null && !updatedUser.getRoles().isEmpty()) {
+            user.setRoles(updatedUser.getRoles());
+        }
         userRepository.save(user);
     }
 

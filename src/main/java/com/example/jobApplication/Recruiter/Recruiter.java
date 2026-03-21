@@ -23,7 +23,7 @@ public class Recruiter {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long recruiterId;
 
-    @OneToOne(cascade = {CascadeType.PERSIST,CascadeType.MERGE,CascadeType.REMOVE})
+    @OneToOne(cascade = {CascadeType.PERSIST,CascadeType.MERGE})
     @JoinColumn(name = "user_id", nullable = false, unique = true)
     private User user;
 

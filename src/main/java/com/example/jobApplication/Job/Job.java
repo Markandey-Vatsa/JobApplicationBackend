@@ -31,7 +31,7 @@ public class Job {
     private String description;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "company",nullable = false)
+    @JoinColumn(name = "company_id",nullable = false)
     @JsonBackReference("company-jobs")
     private Company company;
 
@@ -40,7 +40,7 @@ public class Job {
     private String location;
 
     @Column()
-    private String maxSalary;
+    private Double maxSalary;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "recruiter_id",nullable = false)
@@ -52,5 +52,5 @@ public class Job {
     private List<Application> applications = new ArrayList<>();
 
     @Column()
-    private String minSalary;
+    private Double minSalary;
 }

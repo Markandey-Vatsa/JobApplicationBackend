@@ -2,7 +2,7 @@ package com.example.jobApplication.Application;
 import java.util.List;
 public interface ApplicationService {
 
-    boolean addApplication(Application application);
+    void addApplication(Application application);
 
 //    For recruiter to see all applications for a specific job
 //    List<Application> getApplicationsByJobId(Long jobId);
@@ -14,4 +14,5 @@ public interface ApplicationService {
 
     boolean deleteApplication(Long applicationId);
 
+//    Application getApplicationById(Long applicationId);
 }

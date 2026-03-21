@@ -1,6 +1,7 @@
 package com.example.jobApplication.Job;
 
 import com.example.jobApplication.Job.impl.JobServiceImpl;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,8 +24,14 @@ public class JobController {
 //Post job in a company.
     @PostMapping("/Jobs/{companyId}")
     public ResponseEntity<?> createJob(@RequestBody Job job,@PathVariable Long companyId){
-        boolean ans = jobService.createJob(job,companyId);
-        return ans?new ResponseEntity<>("Job created successfully", HttpStatus.CREATED):new ResponseEntity<>("Job not found", HttpStatus.NO_CONTENT);
+
+        try {
+             jobService.createJob(job, companyId);
+             return new ResponseEntity<>("Job Created successfully",HttpStatus.CREATED);
+        }catch(EntityNotFoundException e){
+            return new ResponseEntity<>("Exception: "+e.getMessage(),HttpStatus.NOT_FOUND);
+        }
+
     }
 
     @GetMapping("/getJobById/{id}")

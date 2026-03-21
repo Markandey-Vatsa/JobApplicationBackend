@@ -8,7 +8,9 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -44,6 +46,6 @@ public class User {
             joinColumns = @JoinColumn(name = "user_id")
     )
     @Enumerated(EnumType.STRING)
-    @Column(name = "role", nullable = false)
-    private List<Role> roles = new ArrayList<>();
+    @Column(name = "role")
+    private Set<Role> roles = new HashSet<>();
 }

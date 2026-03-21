@@ -15,23 +15,35 @@ import java.time.LocalDate;
 @Entity
 @Getter
 @Setter
+@Table(
+        name = "application",
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = {"applicant_id", "job_id"})
+        }
+)
 public class Application{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long applicationId;
 
+//    @ManyToOne
+//    @JsonBackReference("applicant-applications")
+//    private Applicant applicant;
+
     @ManyToOne
+    @JoinColumn(name = "applicant_id", nullable = false)
     @JsonBackReference("applicant-applications")
     private Applicant applicant;
 
-    @Column
-    private Long recruiterId;
+
+//    @Column
+//    private Long recruiterId;
 
 
     // Many applications belong to one job
     @ManyToOne
-    @JoinColumn(name = "job_id")
+    @JoinColumn(name = "job_id",nullable = false)
     @JsonBackReference("job-applications") // child -> backref to parent Job
     private Job job;
 
