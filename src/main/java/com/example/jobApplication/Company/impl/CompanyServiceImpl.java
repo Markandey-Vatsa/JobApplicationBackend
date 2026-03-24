@@ -1,17 +1,10 @@
 package com.example.jobApplication.Company.impl;
 
 import com.example.jobApplication.Company.*;
-
-import com.example.jobApplication.Reviews.Review;
-import com.example.jobApplication.Reviews.ReviewRepository;
 import com.example.jobApplication.User.Role;
 import com.example.jobApplication.User.User;
 import com.example.jobApplication.User.UserRepository;
-import com.example.jobApplication.User.UserService;
 import jakarta.persistence.EntityNotFoundException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,7 +32,7 @@ public class CompanyServiceImpl implements CompanyService {
 
         User dbUser = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        dbUser.getRoles().add(Role.APPLICANT);
+        dbUser.getRoles().add(Role.COMPANY);
 
         company.setUser(dbUser);
 

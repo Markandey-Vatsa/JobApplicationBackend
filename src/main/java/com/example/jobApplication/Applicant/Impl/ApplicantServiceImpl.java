@@ -3,15 +3,10 @@ package com.example.jobApplication.Applicant.Impl;
 import com.example.jobApplication.Applicant.Applicant;
 import com.example.jobApplication.Applicant.ApplicantRepository;
 import com.example.jobApplication.Applicant.ApplicantService;
-import com.example.jobApplication.Application.ApplicationRepository;
 import com.example.jobApplication.User.Role;
 import com.example.jobApplication.User.User;
 import com.example.jobApplication.User.UserRepository;
-import com.example.jobApplication.User.UserService;
 import jakarta.persistence.EntityNotFoundException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

@@ -1,14 +1,12 @@
 package com.example.jobApplication.Application.Impl;
 
-import com.example.jobApplication.Applicant.ApplicantRepository;
+
 import com.example.jobApplication.Application.Application;
 import com.example.jobApplication.Application.ApplicationRepository;
 import com.example.jobApplication.Application.ApplicationService;
 import com.example.jobApplication.Job.Job;
 import com.example.jobApplication.Job.JobRepository;
-import com.example.jobApplication.Recruiter.RecruiterRepository;
 import jakarta.persistence.EntityNotFoundException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
