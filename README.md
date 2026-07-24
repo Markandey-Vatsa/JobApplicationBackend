@@ -1,0 +1,1 @@
+**A backend REST API for a Job Application Portal built with Spring Boot. The application supports role-based access for Applicants, Recruiters, and Companies, along with job posting, application management, and secure authentication using Spring Security Basic Authentication. Built using Spring Boot, Spring Data JPA, MySQL, and RESTful design principles.**
