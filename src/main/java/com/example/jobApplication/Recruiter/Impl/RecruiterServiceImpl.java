@@ -25,9 +25,9 @@ import java.util.List;
 public class RecruiterServiceImpl implements RecruiterService {
 
     RecruiterServiceImpl(RecruiterRepository recruiterRepository,
-                         UserRepository userRepository,
-                         UserService userService,
-                         CompanyRepository companyRepository){
+            UserRepository userRepository,
+            UserService userService,
+            CompanyRepository companyRepository) {
         this.recruiterRepository = recruiterRepository;
         this.userRepository = userRepository;
         this.companyRepository = companyRepository;
@@ -39,8 +39,8 @@ public class RecruiterServiceImpl implements RecruiterService {
     private final UserService userService;
     private final CompanyRepository companyRepository;
 
-//    @Autowired
-//    private JobRepository jobRepository;
+    // @Autowired
+    // private JobRepository jobRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
@@ -48,30 +48,28 @@ public class RecruiterServiceImpl implements RecruiterService {
     @Override
     @Transactional
     public void addRecruiter(Recruiter recruiter) {
-
-
-        // Fetch company
-        Company com = companyRepository.findById(recruiter.getCompany().getId())
-                .orElseThrow(() -> new EntityNotFoundException(
-                        "Company does not exist on platform. Please register your company first."
-                ));
-
         // Fetch USER from DB
         Long userId = recruiter.getUser().getUserId();
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException(
-                        "This account does not exist, kindly create your user account first."
-                ));
+                        "This account does not exist, kindly create your user account first."));
 
         // Assign role on managed entity
         user.getRoles().add(Role.RECRUITER);
 
-        // Attach correct references
+        // Attach user
         recruiter.setUser(user);
-        recruiter.setCompany(com);
 
-        // Save recruiter only
+        // Company is optional - can be assigned later
+        if (recruiter.getCompany() != null && recruiter.getCompany().getId() != null) {
+            Company com = companyRepository.findById(recruiter.getCompany().getId())
+                    .orElseThrow(() -> new EntityNotFoundException(
+                            "Company does not exist on platform. Please register your company first."));
+            recruiter.setCompany(com);
+        }
+
+        // Save recruiter
         recruiterRepository.save(recruiter);
 
     }
@@ -79,9 +77,11 @@ public class RecruiterServiceImpl implements RecruiterService {
     @Override
     @Transactional
     public void updateRecruiter(Long recruiterId, Recruiter updatedRecruiter) {
-        Recruiter rec = recruiterRepository.findById(recruiterId).orElseThrow(()-> new EntityNotFoundException("Recruiter not found"));
-        userService.updateUser(rec.getUser().getUserId(),updatedRecruiter.getUser());
-        rec.setPhoneNumber(updatedRecruiter.getPhoneNumber() != null ? updatedRecruiter.getPhoneNumber() : rec.getPhoneNumber());
+        Recruiter rec = recruiterRepository.findById(recruiterId)
+                .orElseThrow(() -> new EntityNotFoundException("Recruiter not found"));
+        userService.updateUser(rec.getUser().getUserId(), updatedRecruiter.getUser());
+        rec.setPhoneNumber(
+                updatedRecruiter.getPhoneNumber() != null ? updatedRecruiter.getPhoneNumber() : rec.getPhoneNumber());
         rec.setCompany(updatedRecruiter.getCompany() != null ? updatedRecruiter.getCompany() : rec.getCompany());
         rec.setJobs(updatedRecruiter.getJobs() != null ? updatedRecruiter.getJobs() : rec.getJobs());
 
@@ -90,37 +90,39 @@ public class RecruiterServiceImpl implements RecruiterService {
 
     @Override
     public boolean deleteRecruiter(Long recruiterId) {
-        if(!recruiterRepository.existsById(recruiterId)) return false;
-       try{
-           recruiterRepository.deleteById(recruiterId);
-           return true;
-       }catch(Exception e){
-           return false;
-       }
+        if (!recruiterRepository.existsById(recruiterId))
+            return false;
+        try {
+            recruiterRepository.deleteById(recruiterId);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     @Override
     public Recruiter getRecruiterById(Long recruiterId) {
-       return recruiterRepository.findById(recruiterId).orElse(null);
+        return recruiterRepository.findById(recruiterId).orElse(null);
     }
 
-    public List<Recruiter> getAllRecruiters(){
+    public List<Recruiter> getAllRecruiters() {
         return recruiterRepository.findAll();
     }
 
-
-//    Get all jobs posted by a recruiter
+    // Get all jobs posted by a recruiter
     public List<Job> getJobsByRecruiter(Long recruiterId) {
         Recruiter rec = recruiterRepository.findById(recruiterId).orElse(null);
-        if (rec == null) return List.of();
+        if (rec == null)
+            return List.of();
         return rec.getJobs();
     }
 
-//    Get all recruiters by company
+    // Get all recruiters by company
     @Override
     public List<Recruiter> getRecruitersByCompany(Long companyId) {
         Company com = companyRepository.findById(companyId).orElse(null);
-        if (com == null) return List.of();
+        if (com == null)
+            return List.of();
         return com.getRecruiters();
     }
 

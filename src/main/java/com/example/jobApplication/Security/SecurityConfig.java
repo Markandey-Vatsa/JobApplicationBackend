@@ -23,57 +23,62 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(auth -> auth
 
-                        // ================= PUBLIC =================
+                        // ================= PUBLIC ENDPOINTS =================
                         .requestMatchers(HttpMethod.POST, "/users/create").permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-
                         .requestMatchers(HttpMethod.GET, "/companies/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/Job/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/reviews/**").permitAll()
-                        .requestMatchers("/recruiters/jobs/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/recruiters/jobs/**").permitAll()
 
-                        // ================= USER (MANDATORY FIRST ROLE) =================
-                        // .requestMatchers(HttpMethod.POST, "/users/upgrade-role")
-                        // .hasRole("USER")
+                        // ================= AUTHENTICATED USER ENDPOINTS =================
+                        .requestMatchers(HttpMethod.GET, "/users/login").authenticated()
 
-                        // USER can now create profile
-                        .requestMatchers(HttpMethod.POST, "/applicants/")
-                        .hasRole("USER")
+                        // USER can create initial profiles
+                        .requestMatchers(HttpMethod.POST, "/applicants/").hasRole("USER")
+                        .requestMatchers(HttpMethod.POST, "/companies/").hasRole("USER")
+                        .requestMatchers(HttpMethod.POST, "/recruiters/").hasRole("USER")
 
-                        .requestMatchers(HttpMethod.POST, "/companies/")
-                        .hasRole("USER")
+                        // ================= APPLICANT ENDPOINTS =================
+                        .requestMatchers(HttpMethod.GET, "/applicants/**").hasAnyRole("APPLICANT", "ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/applicants/**").hasAnyRole("APPLICANT", "ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/applicants/**").hasAnyRole("APPLICANT", "ADMIN")
 
-                        .requestMatchers(HttpMethod.POST, "/recruiters/")
-                        .hasRole("USER")
-
-                        // ================= APPLICANT =================
-                        .requestMatchers("/applicants/**").hasAnyRole("APPLICANT", "ADMIN")
-
-                        // ================= APPLICATION =================
-                        .requestMatchers("/applications/applicant/**").hasAnyRole("APPLICANT", "ADMIN")
-                        .requestMatchers("/applications/recruiter/**").hasAnyRole("RECRUITER", "ADMIN")
-                        .requestMatchers("/applications/**").hasAnyRole("APPLICANT", "RECRUITER", "ADMIN")
-
-                        // ================= COMPANY =================
+                        // ================= COMPANY ENDPOINTS =================
                         .requestMatchers(HttpMethod.PUT, "/companies/**").hasAnyRole("COMPANY", "ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/companies/**").hasAnyRole("COMPANY", "ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/companies/**").hasAnyRole("COMPANY", "ADMIN")
 
-                        // ================= JOB =================
-                        .requestMatchers(HttpMethod.POST, "/Job/Jobs/**").hasAnyRole("RECRUITER", "COMPANY", "ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/Job/Jobs/**").hasAnyRole("RECRUITER", "COMPANY", "ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/Job/Jobs/**").hasAnyRole("RECRUITER", "COMPANY", "ADMIN")
+                        // ================= RECRUITER ENDPOINTS =================
+                        .requestMatchers(HttpMethod.GET, "/recruiters/").hasAnyRole("COMPANY", "RECRUITER", "ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/recruiters/**").hasAnyRole("RECRUITER", "COMPANY", "ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/recruiters/**").hasAnyRole("RECRUITER", "ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/recruiters/**").hasAnyRole("RECRUITER", "ADMIN")
 
-                        // ================= RECRUITER =================
-                        .requestMatchers(HttpMethod.GET, "/recruiters/").hasAnyRole("COMPANY", "ADMIN")
-                        .requestMatchers("/recruiters/recruiter/**").hasAnyRole("COMPANY", "ADMIN")
-                        .requestMatchers("/recruiters/**").hasAnyRole("RECRUITER", "COMPANY", "ADMIN")
+                        // ================= JOB ENDPOINTS =================
+                        .requestMatchers(HttpMethod.POST, "/Job/**").hasAnyRole("RECRUITER", "COMPANY", "ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/Job/**").hasAnyRole("RECRUITER", "COMPANY", "ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/Job/**").hasAnyRole("RECRUITER", "COMPANY", "ADMIN")
 
-                        // ================= REVIEW =================
+                        // ================= APPLICATION ENDPOINTS =================
+                        .requestMatchers(HttpMethod.GET, "/applications/recruiter/**")
+                        .hasAnyRole("RECRUITER", "COMPANY", "ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/applications/applicant/**").hasAnyRole("APPLICANT", "ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/applications/**")
+                        .hasAnyRole("APPLICANT", "RECRUITER", "COMPANY", "ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/applications/**").hasAnyRole("APPLICANT", "ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/applications/**")
+                        .hasAnyRole("APPLICANT", "RECRUITER", "COMPANY", "ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/applications/**")
+                        .hasAnyRole("APPLICANT", "RECRUITER", "ADMIN")
+
+                        // ================= REVIEW ENDPOINTS =================
                         .requestMatchers(HttpMethod.POST, "/reviews/**").hasAnyRole("APPLICANT", "ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/reviews/**").hasAnyRole("APPLICANT", "ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/reviews/**").hasAnyRole("APPLICANT", "ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/reviews/**").permitAll()
 
-                        // ================= USER =================
+                        // ================= ADMIN ENDPOINTS =================
                         .requestMatchers("/users/**").hasRole("ADMIN")
 
                         // ================= FALLBACK =================

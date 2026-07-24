@@ -10,22 +10,23 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 
 @Service
 public class ApplicantServiceImpl implements ApplicantService {
 
-    ApplicantServiceImpl(ApplicantRepository applicantRepository, UserRepository userRepository){
+    ApplicantServiceImpl(ApplicantRepository applicantRepository, UserRepository userRepository) {
         this.applicantRepository = applicantRepository;
         this.userRepository = userRepository;
     }
+
     private final ApplicantRepository applicantRepository;
     private final UserRepository userRepository;
-
 
     @Override
     @Transactional
     public void addApplicant(Applicant applicant) {
-        Long userId = applicant.getUser().getUserId();  // must come from request
+        Long userId = applicant.getUser().getUserId(); // must come from request
         User dbUser = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
         dbUser.getRoles().add(Role.APPLICANT);
@@ -37,11 +38,14 @@ public class ApplicantServiceImpl implements ApplicantService {
     @Transactional
     public void updateApplicant(Long applicantId, Applicant updatedApplicant) {
 
-        Applicant app = applicantRepository.findById(applicantId).orElseThrow(() -> new EntityNotFoundException("Applicant not found"));
-        if(updatedApplicant != null){
-          app.setUser(updatedApplicant.getUser()!=null ? updatedApplicant.getUser() : app.getUser());
-          app.setResumeLink(updatedApplicant.getResumeLink() != null ? updatedApplicant.getResumeLink() : app.getResumeLink());
-          app.setDescription(updatedApplicant.getDescription()!= null ? updatedApplicant.getDescription() : app.getDescription());
+        Applicant app = applicantRepository.findById(applicantId)
+                .orElseThrow(() -> new EntityNotFoundException("Applicant not found"));
+        if (updatedApplicant != null) {
+            app.setUser(updatedApplicant.getUser() != null ? updatedApplicant.getUser() : app.getUser());
+            app.setResumeLink(
+                    updatedApplicant.getResumeLink() != null ? updatedApplicant.getResumeLink() : app.getResumeLink());
+            app.setDescription(updatedApplicant.getDescription() != null ? updatedApplicant.getDescription()
+                    : app.getDescription());
         }
 
         applicantRepository.save(app);
@@ -49,18 +53,24 @@ public class ApplicantServiceImpl implements ApplicantService {
 
     @Override
     public boolean deleteApplicant(Long applicantId) {
-       if(!applicantRepository.existsById(applicantId)) return false;
-       try{
-           applicantRepository.deleteById(applicantId);
-           return true;
-       }catch(Exception e){
-           return false;
-       }
+        if (!applicantRepository.existsById(applicantId))
+            return false;
+        try {
+            applicantRepository.deleteById(applicantId);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     @Override
     public Applicant getApplicantById(Long applicantId) {
-       return applicantRepository.findById(applicantId).orElse(null);
+        return applicantRepository.findById(applicantId).orElse(null);
+    }
+
+    @Override
+    public List<Applicant> getAllApplicants() {
+        return applicantRepository.findAll();
     }
 
 }

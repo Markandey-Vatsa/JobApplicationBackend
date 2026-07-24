@@ -10,32 +10,28 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-
 @Service
 public class CompanyServiceImpl implements CompanyService {
 
     CompanyServiceImpl(CompanyRepository companyRepository,
-                       UserRepository userRepository){
+            UserRepository userRepository) {
         this.userRepository = userRepository;
         this.companyRepository = companyRepository;
     }
+
     private final CompanyRepository companyRepository;
     private final UserRepository userRepository;
 
     @Override
     @Transactional
     public void addCompany(Company company) {
-        company.getUser().getRoles().add(Role.COMPANY);
-        companyRepository.save(company);
-
-        Long userId = company.getUser().getUserId();  // must come from request
+        Long userId = company.getUser().getUserId(); // must come from request
 
         User dbUser = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
         dbUser.getRoles().add(Role.COMPANY);
 
         company.setUser(dbUser);
-
         companyRepository.save(company);
     }
 
@@ -50,21 +46,23 @@ public class CompanyServiceImpl implements CompanyService {
         try {
             companyRepository.deleteById(companyId);
             return true;
-        }catch(Exception e){
+        } catch (Exception e) {
             return false;
         }
     }
 
-
-//    Update company details
+    // Update company details
     @Override
     @Transactional
     public void updateCompany(Long companyId, Company updatedCompany) {
-        Company com = companyRepository.findById(companyId).orElseThrow(() -> new EntityNotFoundException("Applicant not found"));
-        com.setDescription(updatedCompany.getDescription()!= null? updatedCompany.getDescription(): com.getDescription());
-        com.setJobs(updatedCompany.getJobs()!=null ? updatedCompany.getJobs(): com.getJobs());
-        com.setRecruiters(updatedCompany.getRecruiters()!=null ? updatedCompany.getRecruiters(): com.getRecruiters());
-        com.setUser(updatedCompany.getUser()!=null ? updatedCompany.getUser(): com.getUser());
+        Company com = companyRepository.findById(companyId)
+                .orElseThrow(() -> new EntityNotFoundException("Applicant not found"));
+        com.setDescription(
+                updatedCompany.getDescription() != null ? updatedCompany.getDescription() : com.getDescription());
+        com.setJobs(updatedCompany.getJobs() != null ? updatedCompany.getJobs() : com.getJobs());
+        com.setRecruiters(
+                updatedCompany.getRecruiters() != null ? updatedCompany.getRecruiters() : com.getRecruiters());
+        com.setUser(updatedCompany.getUser() != null ? updatedCompany.getUser() : com.getUser());
         companyRepository.save(com);
     }
 
@@ -74,10 +72,8 @@ public class CompanyServiceImpl implements CompanyService {
     }
 }
 
-
-
-//    GET / companies/ {companyId}/reviews
-//    POST / companies/ {companyId}/reviews
-//    GET / companies/{companyId}/reviews/ {reviewId}
-//    PUT / companies/ {companyId} /reviews/ {reviewId}
-//    DELETE /companies/ {companyId}/reviews/ {reviewId}
+// GET / companies/ {companyId}/reviews
+// POST / companies/ {companyId}/reviews
+// GET / companies/{companyId}/reviews/ {reviewId}
+// PUT / companies/ {companyId} /reviews/ {reviewId}
+// DELETE /companies/ {companyId}/reviews/ {reviewId}

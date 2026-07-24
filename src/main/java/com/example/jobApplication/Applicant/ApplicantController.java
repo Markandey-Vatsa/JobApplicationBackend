@@ -13,39 +13,48 @@ public class ApplicantController {
     @Autowired
     ApplicantService applicantService;
 
-//    Create an account
+    // Create an account
     @PostMapping("/")
-    public ResponseEntity<?> addApplicant(@RequestBody Applicant applicant){
+    public ResponseEntity<?> addApplicant(@RequestBody Applicant applicant) {
         applicantService.addApplicant(applicant);
         return new ResponseEntity<>("Account created successfully", HttpStatus.CREATED);
     }
 
-//   Update applicant details
-  @PutMapping("/{applicantId}")
-  public ResponseEntity<?> updateApplicant(@PathVariable Long applicantId,@RequestBody Applicant updatedApplicant){
+    // Update applicant details
+    @PutMapping("/{applicantId}")
+    public ResponseEntity<?> updateApplicant(@PathVariable Long applicantId, @RequestBody Applicant updatedApplicant) {
         try {
             applicantService.updateApplicant(applicantId, updatedApplicant);
             return new ResponseEntity<>("Applicant details updated successfully", HttpStatus.OK);
-        }catch(Exception e){
-            return new ResponseEntity<>("Couldn't Update applicant details, Please make sure username is correct and applicant exists.",HttpStatus.NO_CONTENT);
+        } catch (Exception e) {
+            return new ResponseEntity<>(
+                    "Couldn't Update applicant details, Please make sure username is correct and applicant exists.",
+                    HttpStatus.NO_CONTENT);
         }
 
-
-  }
-
-//  Delete applicant account
-    @DeleteMapping("/{applicantId}")
-    public ResponseEntity<?> deleteApplicant(@PathVariable Long applicantId){
-        boolean ans = applicantService.deleteApplicant(applicantId);
-        return !ans? new ResponseEntity<>("Applicant not found",HttpStatus.NOT_FOUND): new ResponseEntity<>("Account deleted successfully",HttpStatus.OK);
     }
 
-//    Get applicant by id
+    // Delete applicant account
+    @DeleteMapping("/{applicantId}")
+    public ResponseEntity<?> deleteApplicant(@PathVariable Long applicantId) {
+        boolean ans = applicantService.deleteApplicant(applicantId);
+        return !ans ? new ResponseEntity<>("Applicant not found", HttpStatus.NOT_FOUND)
+                : new ResponseEntity<>("Account deleted successfully", HttpStatus.OK);
+    }
+
+    // Get all applicants
+    @GetMapping("/")
+    public ResponseEntity<?> getAllApplicants() {
+        return new ResponseEntity<>(applicantService.getAllApplicants(), HttpStatus.OK);
+    }
+
+    // Get applicant by id
     @GetMapping("/{applicantId}")
     public ResponseEntity<?> getApplicant(@PathVariable Long applicantId) {
         Applicant applicant = applicantService.getApplicantById(applicantId);
-        if(applicant == null) return new ResponseEntity<>("Applicant does not exist.",HttpStatus.NO_CONTENT);
-        return new ResponseEntity<>(applicant,HttpStatus.OK);
+        if (applicant == null)
+            return new ResponseEntity<>("Applicant does not exist.", HttpStatus.NO_CONTENT);
+        return new ResponseEntity<>(applicant, HttpStatus.OK);
     }
 
 }
