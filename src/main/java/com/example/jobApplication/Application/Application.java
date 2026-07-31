@@ -5,6 +5,7 @@ import com.example.jobApplication.Applicant.Applicant;
 import com.example.jobApplication.Job.Job;
 import com.example.jobApplication.Recruiter.Recruiter;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -54,6 +55,7 @@ public class Application{
     private String profileLink;
 
     @Column
+    @JsonIgnore
     private String resumeLink;
 
     @Column(nullable = false)

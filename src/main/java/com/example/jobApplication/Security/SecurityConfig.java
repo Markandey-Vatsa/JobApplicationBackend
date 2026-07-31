@@ -44,6 +44,11 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PUT, "/applicants/**").hasAnyRole("APPLICANT", "ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/applicants/**").hasAnyRole("APPLICANT", "ADMIN")
 
+                        .requestMatchers(HttpMethod.POST, "/upload/resume").hasAnyRole("APPLICANT", "ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/upload/resume").hasAnyRole("APPLICANT", "ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/upload/resume").hasAnyRole("APPLICANT", "ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/upload/resume").hasAnyRole("APPLICANT", "ADMIN")
+
                         // ================= COMPANY ENDPOINTS =================
                         .requestMatchers(HttpMethod.PUT, "/companies/**").hasAnyRole("COMPANY", "ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/companies/**").hasAnyRole("COMPANY", "ADMIN")

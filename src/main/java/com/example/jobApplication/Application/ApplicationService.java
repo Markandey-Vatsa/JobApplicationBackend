@@ -1,4 +1,7 @@
 package com.example.jobApplication.Application;
+import org.springframework.core.io.Resource;
+import org.springframework.http.ResponseEntity;
+
 import java.util.List;
 public interface ApplicationService {
 
@@ -15,4 +18,7 @@ public interface ApplicationService {
     boolean deleteApplication(Long applicationId);
 
 //    Application getApplicationById(Long applicationId);
+
+
+    ResponseEntity<Resource> getApplicantResumeForRecruiter(Long applicationId);
 }

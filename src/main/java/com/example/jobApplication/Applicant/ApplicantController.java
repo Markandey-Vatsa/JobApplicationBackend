@@ -31,7 +31,6 @@ public class ApplicantController {
                     "Couldn't Update applicant details, Please make sure username is correct and applicant exists.",
                     HttpStatus.NO_CONTENT);
         }
-
     }
 
     // Delete applicant account
